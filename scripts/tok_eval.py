@@ -1,3 +1,6 @@
+# Work is based on the original implementation by Andrej Karpathy, licensed under MIT.
+# Snapshot: https://github.com/karpathy/nanochat/blob/d6d86cbf4c0bcc1de5bbab28cae1f98038d0362a/scripts/tok_eval.py
+
 """
 Evaluate compression ratio of the tokenizer.
 """
@@ -5,13 +8,25 @@ Evaluate compression ratio of the tokenizer.
 from nanochat.tokenizer import get_tokenizer, RustBPETokenizer
 from nanochat.dataset import parquets_iter_batched
 
-# Random text I got from a random website this morning
+# Source: https://www.tagesschau.de/ausland/europa/louvre-einbruch-102.html
 news_text = r"""
-(Washington, D.C., July 9, 2025)- Yesterday, Mexico’s National Service of Agro-Alimentary Health, Safety, and Quality (SENASICA) reported a new case of New World Screwworm (NWS) in Ixhuatlan de Madero, Veracruz in Mexico, which is approximately 160 miles northward of the current sterile fly dispersal grid, on the eastern side of the country and 370 miles south of the U.S./Mexico border. This new northward detection comes approximately two months after northern detections were reported in Oaxaca and Veracruz, less than 700 miles away from the U.S. border, which triggered the closure of our ports to Mexican cattle, bison, and horses on May 11, 2025.
+So lief der Einbruch in den Louvre ab
+Stand: 19.10.2025 22:33 Uhr
 
-While USDA announced a risk-based phased port re-opening strategy for cattle, bison, and equine from Mexico beginning as early as July 7, 2025, this newly reported NWS case raises significant concern about the previously reported information shared by Mexican officials and severely compromises the outlined port reopening schedule of five ports from July 7-September 15. Therefore, in order to protect American livestock and our nation’s food supply, Secretary Rollins has ordered the closure of livestock trade through southern ports of entry effective immediately.
+Es ist eine Tat, die Frankreich aufwühlt: Nur vier Minuten brauchten vermummte Diebe, um in das weltberühmte Museum Louvre einzubrechen und Teile der Kronjuwelen zu erbeuten. Was über den Coup bekannt ist.
 
-“The United States has promised to be vigilant — and after detecting this new NWS case, we are pausing the planned port reopening’s to further quarantine and target this deadly pest in Mexico. We must see additional progress combatting NWS in Veracruz and other nearby Mexican states in order to reopen livestock ports along the Southern border,” said U.S. Secretary of Agriculture Brooke L. Rollins. “Thanks to the aggressive monitoring by USDA staff in the U.S. and in Mexico, we have been able to take quick and decisive action to respond to the spread of this deadly pest.”
+Wie kamen die Täter in das Gebäude?
+
+Die vollständig vermummten Täter trafen nach ersten Erkenntnissen gegen 9.30 Uhr, kurz nach Öffnung des Louvre, am Gebäude ein. Auf der zur Seine gewandten Seite des Museums parkten sie ein Fahrzeug mit Hebebühne. Es handelt sich um einen herkömmlichen Möbellift, wie er auch bei Umzügen verwendet wird.
+
+Über diese Hebebühne gelangten die Täter auf einen etwa zehn Meter hohen Balkon. Mehrere Medien berichten, zwei Männer seien in das Innere des Louvre eingedrungen, nachdem sie die Fenster mit einem Trennschleifer oder kleinen Kettensägen 
+zerstört hätten. Ein dritter Mann habe draußen Wache gestanden.
+
+Wie lief der Diebstahl ab?
+
+Laut Frankreichs Kulturministerin Rachida Dati benötigten die Täter für ihren Beutezug nur vier Minuten. Durch das Fenster gelangten sie in den Denon-Flügel des Louvre, in dem auch die "Mona Lisa", das weltberühmte Gemälde von Leonardo da Vinci, ausgestellt wird. Die Täter standen direkt in der Apollon-Galerie, in der die französischen Kronjuwelen aufbewahrt werden. Dort befinden sich Schmuckstücke aus der Zeit Ludwigs des Vierzehnten und der napoleonischen Kaiserzeit, darunter drei große Diamanten.
+
+Dati zufolge wurden Vitrinen zerstört und Wertstücke entnommen. Innenminister Laurent Nuñez sagte: "Die Einbrecher hatten den Ort vorher offensichtlich genau erkundet und sie waren sehr versiert." Nach dem Diebstahl flüchteten sie nach Informationen der Zeitung Le Parisien auf zwei hochmotorisierten Motorrollern. Die Videoüberwachung habe sie auf dem Weg in Richtung der Autobahn A6 gefilmt.
 """.strip()
 
 # Random Korean text (to test non-English compression)
@@ -64,83 +79,193 @@ class BasicTokenizer(Tokenizer):
                 print(f"merge {i+1}/{num_merges}: {pair} -> {idx} ({vocab[idx]}) had {stats[pair]} occurrences")
 """.strip()
 
+# Taken from: https://git.informatik.uni-leipzig.de/fl34gufe/skripte
 math_text = r"""
 \documentclass[12pt]{article}
-\usepackage{amsmath,amsthm,amssymb}
-\usepackage[margin=1in]{geometry}
 
-\newtheorem{theorem}{Theorem}
-\newtheorem*{remark}{Remark}
+\maketitle
 
-\begin{document}
+\nocite{*}
+\bibliography{literatur}
+\bibliographystyle{abbrv}
 
-\begin{center}
-{\Large A Cute Identity: The Sum of Cubes is a Square}
-\end{center}
+\section*{Grundlagen}
 
-\begin{theorem}
-For every integer $n \ge 1$,
-\[
-\sum_{k=1}^{n} k^{3} \;=\; \left(\frac{n(n+1)}{2}\right)^{2}.
-\]
-\end{theorem}
+Mathematische Objekte bestehen aus Grundmengen ggf. Relationen, Funktionen und Konstanten.
 
-\begin{proof}[Proof 1 (Induction)]
-Let $S(n) = \sum_{k=1}^{n} k^3$. For $n=1$, $S(1)=1=(1\cdot 2/2)^2$, so the base case holds.
+Einfache Aussagen betreffen nur Elemente der Grundmenge und haben keine unendlichen Dis- oder Konjunktionen.
+Dies sind prädikatenlogische Aussagen erster Stufe.
 
-Assume $S(n)=\big(\tfrac{n(n+1)}{2}\big)^2$ for some $n\ge 1$.
-Then
-\[
-S(n+1)
-= S(n) + (n+1)^3
-= \left(\frac{n(n+1)}{2}\right)^2 + (n+1)^3.
-\]
-Factor out $(n+1)^2$:
-\[
-S(n+1)
-= (n+1)^2\left( \frac{n^2}{4} + (n+1) \right)
-= (n+1)^2\left( \frac{n^2 + 4n + 4}{4} \right)
-= (n+1)^2\left( \frac{(n+2)^2}{4} \right).
-\]
-Thus
-\[
-S(n+1)=\left(\frac{(n+1)(n+2)}{2}\right)^2,
-\]
-which matches the claimed formula with $n$ replaced by $n+1$. By induction, the identity holds for all $n\ge 1$.
-\end{proof}
+\textit{Monadische Aussagen 2. Stufe erlaubten Quantifizierung über Teilmengen der Grundmenge; Aussagen 2. Stufe erlaubten zusätzlich Quantifizierung über Funktionen und Relationen.}
 
-\begin{proof}[Proof 2 (Algebraic telescoping)]
-Recall the binomial identity
-\[
-(k+1)^4 - k^4 = 4k^3 + 6k^2 + 4k + 1.
-\]
-Summing both sides from $k=0$ to $n$ telescopes:
-\[
-(n+1)^4 - 0^4
-= \sum_{k=0}^{n}\big(4k^3 + 6k^2 + 4k + 1\big)
-= 4\sum_{k=1}^{n}k^3 + 6\sum_{k=1}^{n}k^2 + 4\sum_{k=1}^{n}k + (n+1).
-\]
-Using the standard sums
-\[
-\sum_{k=1}^{n}k = \frac{n(n+1)}{2}
-\quad\text{and}\quad
-\sum_{k=1}^{n}k^2 = \frac{n(n+1)(2n+1)}{6},
-\]
-solve for $\sum_{k=1}^{n}k^3$ to get
-\[
-\sum_{k=1}^{n}k^3 = \left(\frac{n(n+1)}{2}\right)^2.
-\]
-\end{proof}
+\section{Strukturen}
 
-\begin{remark}
-Geometrically, the identity says: ``adding up $1^3,2^3,\dots,n^3$ builds a perfect square’’—namely the square of the $n$th triangular number. This is why one sometimes calls it the \emph{sum-of-cubes is a square} phenomenon.
-\end{remark}
+\begin{dfn}
+    Eine \underline{Signatur} $ \sigma $ ist ein Quadrupel
+    \begin{equation*}
+        \sigma = \sign{}
+    \end{equation*}
+    mit einer Menge von Konstantensymbolen $ \m{C} $, einer Menge von Funktionssymbolen $ \m{F} $, einer Menge von Relationensymbolen $ \m{R} $, einer Stelligkeitsfunktion $ \sigma' : \m{F} \cup \m{R} \rightarrow \mathbb{N} $.
+\end{dfn}
+
+\begin{dfn}
+    Eine \underline{Struktur} $ \m{M} $ ist ein Quadrupel
+    \begin{equation*}
+        \m{M} = \struc{M}{\m{M}}{}
+    \end{equation*}
+    mit einer Menge $ M $ (oftmals $ M \neq \emptyset $), Indexmengen $ \m{C}, \m{F}, \m{R} $.
+    Wobei gilt $ c^\m{M} \in M $ für $ c \in \m{C} $, $ f^\m{M} : M^{n_f} \rightarrow M $, $ n_f \in \mathbb{N} $ für $ f \in \m{F} $, $ R^\m{M} \subseteq M^{m_R} $ für $ R \in \m{R} $.
+
+    $ \m{M} $ heißt \underline{$ \sigma $-Struktur} bzw. $ \m{M} $ und $ \sigma $ \underline{passen zueinander}, falls:
+    \begin{enumerate}
+        \item $ n_f = \sigma'(f) $ für $ f \in \m{F} $
+        \item $ m_R = \sigma'(R) $ für $ R \in \m{R} $
+    \end{enumerate}
+
+    $ c^\m{M} $ heißt auch \underline{Interpretation} von $ c $ in $ \m{M} $; Analoges gilt für $ f^\m{M}, R^\m{M} $.
+\end{dfn}
+
+\begin{dfn}
+    Seien $ \m{M} = \struc{M}{\m{M}}{} $, $ \m{N} = \struc{N}{\m{N}}{} $ zwei $ \sigma $-Strukturen.
+    Ein Homomorphismus von $ \m{M} $ nach $ \m{N} $ ist eine Abbildung $ h : M \rightarrow N $ mit:
+    \begin{enumerate}
+        \item $ h(c^\m{M}) = c^\m{N} $ für allen Konstantensymbole $ c \in \m{C} $
+        \item $ h\big(f^\m{M}(a_1, ..., a_n)\big) = f^\m{N}\big(h(a_1), ..., h(a_n)\big) $ für alle Funktionssymbole $ f \in \m{F} $ mit $ n = \sigma'(f) $, $ a_1, ..., a_n \in M $.
+        \item \label{itm:homomorphismus-3} $ (a_1, ..., a_n) \in R^\m{M} \Rightarrow \big(h(a_1), ..., h(a_n)\big) \in R^\m{N} $ für alle Relationensymbole $ R \in \m{R} $, $ n = \sigma'(R) $, $ a_1, ..., a_n \in M $.
+    \end{enumerate}
+
+        Für einen Homomorphismus $ h $ von $ \m{M} $ nach $ \m{N} $ schreibt man auch $ h : \m{M} \rightarrow \m{N} $.
+
+        $ h $ heißt \underline{stark}, wenn für alle $ R \in \m{R} $ mit $ n = \sigma'(R) $, $ b_1, ..., b_n \in h(M) \subseteq N $ mit $ (b_1, ..., b_n) \in R^\m{N} $ gilt:
+        \begin{equation}
+            \label{eq:staerke}
+            \exists a_1, ..., a_n \in M : (a_1, ..., a_n) \in R^\m{M}, h(a_i) = b_i, 1 \leq i \leq n
+        \end{equation}
+
+        $ h $ heißt \underline{Einbettung}, falls $ h $ stark und injektiv ist.
+        Ist $ h $ injektiv, dann lassen sich Bedingung \ref{itm:homomorphismus-3} und Gleichung \eqref{eq:staerke} folgendermaßen zusammenfassen; für alle $ R \in \m{R} $, $ n = \sigma'(R) $, $ a_1, ..., a_n \in M $:
+        \begin{equation*}
+            (a_1, ..., a_n) \in R^\m{M} \Leftrightarrow \big(h(a_1), ..., h(a_n)\big) \in R^\m{N}
+        \end{equation*}
+
+        $ h $ heißt Isomorphimus, wenn $ h $ eine surjektive Einbettung ist.
+        Man schreibt $ \m{M} \cong \m{N} $, wenn ein Isomorphimus $ h : \m{M} \rightarrow \m{N} $ existiert.
+        Sind $ h : \m{M} \rightarrow \m{N} $, $ g : \m{N} \rightarrow \m{K} $ Isomorphismen, dann sind auch folgende Funktionen ein Isomorphimus:
+        \begin{itemize}
+            \item $ h^{-1} $
+            \item $ g \circ h : \m{M} \rightarrow \m{K} $
+        \end{itemize}
+
+        $ h : \m{M} \Rightarrow \m{M} $ heißt \underline{Automorphismus von $ \m{M} $}, wenn $ h $ ein Isomorphimus ist.
+        Die Struktur $ Aut(\m{M}) = \big( \{ h : \m{M} \rightarrow \m{M} \mid h \text{ Automorphismus} \}, \circ \big) $ mit Komposition $ \circ $ ist eine Gruppe.
+\end{dfn}
+
+\begin{dfn}
+    Seien $ \m{M} = \struc{M}{\m{M}}{} $, $ \m{N} = \struc{N}{\m{N}}{} $ $\sigma $-Strukturen.
+    $ \m{N} $ heißt \underline{Teil-/Unter-/Substruktur} von $ \m{M} $, falls:
+    \begin{enumerate}
+        \item $ N \subseteq M $
+        \item $ c^\m{N} = c^\m{M} $ für $ c \in \m{C} $
+        \item $ f^\m{N}(\bar{a}) = f^\m{M}(\bar{a}) $ für $ f \in \m{F} $, $ \bar{a} \in N^{\sigma'(f)} $
+        \item $ \bar{a} \in R^\m{N} \Leftrightarrow \bar{a} \in R^\m{M} $, d.~h. $ R^\m{N} = R^\m{M} \cap N^{\sigma'(R)} $ für $ \bar{a} \in N^{\sigma'(R)} $
+    \end{enumerate}
+
+        Wenn $ \m{N} $ eine Teilstruktur von $ \m{M} $ ist, schreibt man auch $ \m{N} \subseteq \m{M} $.
+        $ \m{M} $ wird dann auch \underline{Ober- oder Erweiterungsstruktur von $ \m{N} $} genannt.
+\end{dfn}
+
+\begin{dfn}
+    Seien $ \sigma_0 = \sign{0} $, $ \sigma_1 = \sign{1} $ zwei Signaturen
+    mit $ \sigma_0 \subseteq \sigma_1 $, d.~h. $ \m{C}_0 \subseteq \m{C}_1 $, $ \m{F}_0 \subseteq \m{F}_1 $, $ \m{R}_0 \subseteq \m{R}_1 $ und $ \sigma'_0 = \sigma'_1 \vert_{\m{F}_0 \cup \m{R}_0} $ .
+
+    Sei $ \m{M} = \struc{M}{\m{M}}{1} $ eine $ \sigma_1 $-Struktur.
+    Dann heißt $ \m{M} \vert_{\sigma_0} = \struc{M}{\m{M}}{0} $ das \underline{Redukt} von $ \m{M} $ auf $ \sigma_0 $ od. auch $ \sigma_0 $-Redukt.
+    Umgekehrt heißt $ \m{M} $ \underline{Expansion} von $ \m{N} := \m{M} \vert_{\sigma_0} $ auf $ \sigma_1 $, d.~h. $ \m{M} $ entsteht aus $ \m{N} $ durch Hinzunahme geeigneter (bzgl. $ \sigma_1 $) Konstanten/Funktionen/Relationen.
+
+    Eine Signatur $ \sigma = \sign{} $ heißt \underline{konstantenlos}, falls $ \m{C} = \emptyset $ und \underline{(rein) relational}, falls $ \m{C} = \m{F} = \emptyset $.
+\end{dfn}
+
+\begin{bsp}
+    Betrachten wir die Gruppe $ \m{G} = (G, 1^\m{G}, \circ^\m{G}) $.
+    $ \m{G} $ ist ein Redukt von $ (G, 1^\m{G}, \circ^\m{G}, \circ^{-1\m{G}}) $.
+    Von $ \m{R} = (R, 0, 1, +, \cdot) $ ist $ (R, 0, +) $ ein Redukt.
+\end{bsp}
+
+\section{Sprachen und Formeln}
+
+Wunsch: Formeln der Form $ \forall x. (x \geq 0 \rightarrow \exists y. x = y \cdot y) $.
+
+Gegeben eine Signatur $ \sigma = \sign{} $.
+\underline{Grundsymbole} der Sprache $ L = L(\sigma) $ sind:
+\begin{enumerate}
+    \item abzählbar viele Variablen $ v_n $, $ n \in \mathbb{N} $
+    \item die Symbole von $ \sigma $ aus $ \m{C} \cup \m{F} \cup \m{R} $ (nichtlogische Symbole)
+    \item Logisch Zeichen: $ \neg, \land, = $
+    \item Quantor $ \exists $
+    \item Klammersymbole $ ( $ und $ ) $
+\end{enumerate}
+
+Die Menge der \underline{Terme} von $ \sigma $ oder $ L(\sigma) $ ist die kleinste Menge für die gilt:
+\begin{enumerate}
+    \item Alle Variablen $ v_n $, $ n \in \mathbb{N} $ sind ein Term.
+    \item Alle Konstantensymbole $ c \in \m{C} $ sind ein Term.
+    \item Wenn $ t_1, ..., t_n $ Terme sind, $ f \in \m{F} $ mit $ \sigma'(f) = n $, dann ist auch $ f(t_1, ..., t_n) $ ein Term.
+\end{enumerate}
+
+Die Menge der \underline{Atomformeln} bzgl. $ \sigma $ ist die kleinste Menge für die gilt:
+\begin{enumerate}
+    \item Wenn $ t_1, t_2 $ Terme sind, dann ist $ t_1 = t_2 $ eine Atomformel,
+    \item Wenn $ t_1, ..., t_n $ Terme sind, $ R \in \m{R} $ mit $ \sigma'(R) = n $, dann ist $ R(t_1, ..., t_n) $ eine Atomformel.
+\end{enumerate}
+
+Die Menge der \underline{Formeln} bzgl. $\sigma $ ist die kleineste Menge für die gilt:
+\begin{enumerate}
+    \item Jede Atomformel ist eine Formel.
+    \item Wenn $ \varphi, \psi $ Formeln sind, $ x = v_n $ $ n \in \mathbb{N} $ Variable, dann sind auch $ \neg \varphi$, $ (\varphi \land \psi) $, $ (\exists x) \varphi $ Formeln.
+\end{enumerate}
+
+$ L(\sigma) := $ Menge der Formeln bzgl. $ \sigma $.
+Abkürzungen für zwei Formeln $ \varphi , \psi \in L(\sigma) $ sind wie üblich definiert:
+\begin{itemize}
+    \item $ \varphi \lor \psi := \neg (\neg \varphi \land \neg \psi) $
+    \item $ \varphi \rightarrow \psi := \neg \varphi \lor \psi $
+    \item $ \varphi \leftrightarrow \psi := (\varphi \rightarrow \psi) \land (\psi \rightarrow \varphi) $
+    \item $ (\forall x) \varphi := \neg (\exists x) \neg \varphi $
+\end{itemize}
+
+Die Grundsymbole sind von $ L(\sigma) $ sind absichtlich so spärlich definiert, da Beweise oftmals über den Aufbau von Formeln geführt werden und in diesem Fall minimal-viele Zeichen in Beweisen berücksichtigt werden müssen.
+
+Seien $ x $ eine Variable $ \varphi $ und eine Formel. Der \underline{(Wirkungs-)Bereich} eines Quantors $ (\exists x) \varphi $ ist definiert als $ \varphi $.
+Ein Vorkommen von $ x $ im Bereich von $ (\exists x) $ heißt \underline{gebunden}.
+Ist $ x $ nicht im Bereich eines Quantors, so heißt dieses Vorkommen \underline{frei}.
+$ x $ ist eine \underline{freie Variable}, wenn $ x $ an mindestens einer Stelle frei vorkommt; ansonsten heißt $ x $ \underline{gebunden}.
+
+Eine Formel $ \varphi $ heißt \underline{Aussage} oder \underline{Satz}, falls $ \varphi $ keine freien Variablen enthält.
 
 \end{document}
 """.strip()
 
+# Taken from: https://scholar.harvard.edu/files/grusdt/files/diploma-fgrusdt.pdf
+# Fabian is one of the most fascinating and intelligent individuals I've ever met.
 science_text = r"""
-Photosynthesis is a photochemical energy transduction process in which light-harvesting pigment–protein complexes within the thylakoid membranes of oxygenic phototrophs absorb photons and initiate charge separation at the reaction center, driving the linear electron transport chain from water to NADP⁺ via photosystem II, the cytochrome b₆f complex, and photosystem I, concomitantly generating a trans-thylakoid proton motive force utilized by chloroplastic ATP synthase. The light-dependent reactions produce ATP and NADPH, which fuel the Calvin–Benson–Bassham cycle in the stroma, wherein ribulose-1,5-bisphosphate is carboxylated by ribulose-1,5-bisphosphate carboxylase/oxygenase (RuBisCO) to form 3-phosphoglycerate, subsequently reduced and regenerated through a series of enzymatic steps, enabling net assimilation of CO₂ into triose phosphates and ultimately carbohydrates. This process is tightly regulated by photoprotective mechanisms, redox feedback, and metabolite flux, representing a central biochemical pathway coupling solar energy capture to the biosphere’s primary productivity.
+Der Austausch von Elektronen mit Photonen bedeutet, dass für DZPs das Pauli-Prinzip nicht gilt
+und damit kein integraler Quanten-Hall-Effekt existiert. Zusätzliche repulsive Wechselwirkungen
+können jedoch auch hier zu einer Mutation führen, so dass die wechselwirkenden Bosonen sich wie
+schwach-wechselwirkende Fermionen in einem reduzierten Magnetfeld verhalten. Der fraktionale
+Quanten-Hall-Effekt existiert also für Bosonen. Die starken repulsiven Wechselwirkungen können
+durch langreichweitige Van-der-Waals Potentiale zwischen Rydberg-Zuständen realisiert werden
+[63]. Dazu werden DZPs mit einem langlebigen Rydberg-Zustand betrachtet [59]. Es stellt sich
+also die Frage nach der Form der effektiven Polariton-Polariton Wechselwirkung. Damit verbunden
+muss geklärt werden, in welchen Parameterbereichen FQHE-Grundzustände vorliegen und ob ihre
+Anregungslücken im messbaren Bereich liegen. In dieser Arbeit werden vor allem die prominenten
+Laughlin-Zustände untersucht.
+
+Verschiedene Ansätze versuchen den bosonischen FQHE in ultra-kalten Quantengasen nachzuweisen, wozu rotierende Bose-Einstein-Kondensate verwendet werden [68]. Sollte dies gelingen, so
+ergeben sich vielfältige Manipulationsmöglichkeiten der elementaren Anregungen. Unter anderem
+ist eine direkte Vermessung der anyonischen Statistik möglich [60]. Im Folgenden soll untersucht
+werden, ob in einer quantenoptischen Realisierung ein ebenso großes Maß an Kontrolle vorhanden
+ist. Es stellt sich insbesondere die Frage, wie die gewünschten Zustände präpariert werden können.
+Dazu kommt die Verwendung von Dunkelzuständen nichtlinearer Polaritonen- Vernichtungsoperatoren in offenen Quantensystemen in Frage.
 """.strip()
 
 # The tokenizer was trained on data from earlier shards, so it has seen this data
