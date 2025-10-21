@@ -10,6 +10,12 @@ This repo is building a full-stack implementation of an LLM like ChatGPT in a si
 
 Please note that *this* implementation is not meant to be the **one** German nanochat model. Instead, it is meant to be one possible nanochat model for German! The choice of pretraining data is highly opinionated, and I plan to experiment more with other datasets, such as data from the amazing [Occiglot dataset](https://huggingface.co/datasets/occiglot/occiglot-fineweb-v1.0), [FineWeb-2](https://huggingface.co/datasets/HuggingFaceFW/fineweb-2), [Common Corpus](https://huggingface.co/datasets/PleIAs/common_corpus), [German Commons](https://huggingface.co/datasets/coral-nlp/german-commons)...
 
+## Changelog
+
+* 22.10.2025: [Various fixes](https://github.com/stefan-it/nanochat-german/pull/1) for the evaluation code
+* 21.10.2025: [Public release](https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data) of translated evaluation datasets
+* 20.10.2025: Initial version.
+
 ## Progress
 
 Here's a quick overview of (completed) steps for training a nanochat model for German:
