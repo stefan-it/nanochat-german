@@ -17,6 +17,7 @@ Here's a quick overview of (completed) steps for training a nanochat model for G
 * [x] Dataset Construction
 * [x] Tokenizer Training
 * [x] Tokenizer Evaluation
+* [x] [Evaluation Datasets](https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data)
 
 Expect more updates in the upcoming days!
 
