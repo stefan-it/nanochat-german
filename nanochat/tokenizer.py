@@ -123,6 +123,14 @@ class HuggingFaceTokenizer:
 
     def get_bos_token_id(self):
         bos = self.encode_special("<|bos|>")
+
+        # Implement fallbacks
+        if bos is None:
+            bos = self.encode_special("<|endoftext|>")
+
+        if bos is None:
+            bos = self.encode_special("<s>")
+
         return bos
 
     def encode(self, text, *args, **kwargs):
