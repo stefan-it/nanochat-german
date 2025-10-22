@@ -31,7 +31,7 @@ Expect more updates in the upcoming days!
 
 For the very first German nanochat model, we use a subset of the [LLäMmlein](https://huggingface.co/datasets/LSX-UniWue/LLaMmlein-Dataset) pretraining dataset, which itself is a strict subset of the German portion of the [RedPajama V2](https://huggingface.co/datasets/togethercomputer/RedPajama-Data-V2) dataset.
 
-More precisely, we use the first 20 JSONL files of their dataset, merge them into a single collection, and split the data into shards containing approximately 250 million characters each. 
+More precisely, we use the first 20 JSONL files of their dataset, merge them into a single collection, and split the data into shards containing approximately 250 million characters each.
 
 The dataset is available on the [🤗 Model Hub](https://huggingface.co/datasets/stefan-it/nanochat-german-data).
 
