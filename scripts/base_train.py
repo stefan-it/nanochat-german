@@ -211,13 +211,13 @@ for step in range(num_iterations + 1):
     if master_process and (last_step or (step > 0 and step % sample_every == 0)):
         model.eval()
         prompts = [
-            "The capital of France is",
-            "The chemical symbol of gold is",
-            "If yesterday was Friday, then tomorrow will be",
-            "The opposite of hot is",
-            "The planets of the solar system are:",
-            "My favorite color is",
-            "If 5*x + 3 = 13, then x is",
+            "Die Hauptstadt von Frankreich ist",
+            "Das chemische Symbol von Gold ist",
+            "Wenn gestern Freitag war, dann ist morgen",
+            "Das Gegenteil von heiß ist",
+            "Die Planeten des Sonnensystems sind:",
+            "Meine Lieblingsfarbe ist",
+            "Wenn 5*x + 3 = 13, dann ist x",
         ]
         engine = Engine(orig_model, tokenizer) # use orig_model to avoid recompilation
         for prompt in prompts:
