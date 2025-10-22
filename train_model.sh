@@ -23,6 +23,10 @@ command -v uv &> /dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
 [ -d ".venv" ] || uv venv
 # install the repo dependencies
 uv sync
+
+# additionally install trackio
+uv pip install trackio
+
 # activate venv so that `python` uses the project's venv instead of system python
 source .venv/bin/activate
 
