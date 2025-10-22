@@ -4,9 +4,9 @@
 # It is designed to run in ~4 hours on 8XH100 node at $3/GPU/hour.
 
 # 1) Example launch (simplest):
-# bash speedrun.sh
+# bash train_model.sh
 # 2) Example launch in a tmux session (because the run takes ~4 hours):
-# WANDB_RUN=speedrun tmux new-session -s speedrun -d "bash speedrun.sh" \; pipe-pane -o "cat >> speedrun.log"
+# WANDB_RUN=speedrun tmux new-session -s speedrun -d "bash train_model.sh" \; pipe-pane -o "cat >> speedrun.log"
 
 # Default intermediate artifacts directory is in ~/.cache/nanochat
 export OMP_NUM_THREADS=1
@@ -15,6 +15,7 @@ mkdir -p $NANOCHAT_BASE_DIR
 
 # -----------------------------------------------------------------------------
 # Python venv setup with uv
+export PATH=$HOME/.local/bin:$PATH
 
 # install uv (if not already installed)
 command -v uv &> /dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -45,6 +46,8 @@ python -m nanochat.report reset
 
 # -----------------------------------------------------------------------------
 # Download already trained tokenizer
+mkdir -p $NANOCHAT_BASE_DIR/tokenizer
+
 wget -LO $NANOCHAT_BASE_DIR/tokenizer/token_bytes.pt https://huggingface.co/stefan-it/nanochat-german-tokenizer/resolve/main/token_bytes.pt?download=true
 wget -LO $NANOCHAT_BASE_DIR/tokenizer/tokenizer.pkl https://huggingface.co/stefan-it/nanochat-german-tokenizer/resolve/main/tokenizer.pkl?download=true
 
@@ -77,8 +80,7 @@ wget -LO $NANOCHAT_EVAL_DATA_DIR/world_knowledge/mmlu.jsonl  https://huggingface
 python -m nanochat.dataset -n 240
 
 # -----------------------------------------------------------------------------
-# Base model (pretraining)
-## pretrain the d20 model
+# Base model (pretraining + evaluation, d20 model)
 torchrun --standalone --nproc_per_node=8 -m scripts.base_train -- --depth=20 --run=$WANDB_RUN
 torchrun --standalone --nproc_per_node=8 -m scripts.base_loss
 torchrun --standalone --nproc_per_node=8 -m scripts.base_eval
