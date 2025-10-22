@@ -43,6 +43,16 @@ if [ -z "$WANDB_RUN" ]; then
 fi
 
 # -----------------------------------------------------------------------------
+# Tokenizer
+
+# Install Rust / Cargo
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+source "$HOME/.cargo/env"
+
+# Build the rustbpe Tokenizer
+uv run maturin develop --release --manifest-path rustbpe/Cargo.toml
+
+# -----------------------------------------------------------------------------
 # During the course of the run, we will be writing markdown reports to the report/
 # directory in the base dir. This command clears it out and writes a header section
 # with a bunch of system info and a timestamp that marks the start of the run.
@@ -88,3 +98,8 @@ python -m nanochat.dataset -n 240
 torchrun --standalone --nproc_per_node=8 -m scripts.base_train -- --depth=20 --run=$WANDB_RUN
 torchrun --standalone --nproc_per_node=8 -m scripts.base_loss
 torchrun --standalone --nproc_per_node=8 -m scripts.base_eval
+
+# -----------------------------------------------------------------------------
+# Generate the full report by putting together all the sections
+# report.md is the output and will be copied to current directory for convenience
+python -m nanochat.report generate
