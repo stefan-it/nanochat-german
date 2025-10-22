@@ -38,7 +38,8 @@ def tokenizing_distributed_data_loader(B, T, split, tokenizer_threads=4, tokeniz
             batch_index += 1
         # Move tokens from the deque into the scratch buffer
         tokens = [token_buffer.popleft() for _ in range(needed_tokens)]
-        scratch = torch.tensor(tokens, dtype=torch.int64, pin_memory=True)
+        # CUDA supports memory pinning for faster transfers between CPU and GPU:
+        scratch = torch.tensor(tokens, dtype=torch.int64, pin_memory=(device == "cuda"))
         # Create the inputs/targets as 1D tensors
         inputs_cpu = scratch[:-1].to(dtype=torch.int32)
         targets_cpu = scratch[1:]
