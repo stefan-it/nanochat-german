@@ -16,7 +16,7 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 import time
 from contextlib import nullcontext
 
-import wandb
+import trackio as wandb
 import torch
 
 from nanochat.gpt import GPT, GPTConfig
