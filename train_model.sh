@@ -1,14 +1,12 @@
 #!/bin/bash
 
-# This script is the "Best ChatGPT clone that $100 can buy",
+# This script is the "Best German ChatGPT clone that $100 can buy",
 # It is designed to run in ~4 hours on 8XH100 node at $3/GPU/hour.
 
 # 1) Example launch (simplest):
 # bash speedrun.sh
-# 2) Example launch in a screen session (because the run takes ~4 hours):
-# screen -L -Logfile speedrun.log -S speedrun bash speedrun.sh
-# 3) Example launch with wandb logging, but see below for setting up wandb first:
-# WANDB_RUN=speedrun screen -L -Logfile speedrun.log -S speedrun bash speedrun.sh
+# 2) Example launch in a tmux session (because the run takes ~4 hours):
+# WANDB_RUN=speedrun tmux new-session -s speedrun -d "bash speedrun.sh" \; pipe-pane -o "cat >> speedrun.log"
 
 # Default intermediate artifacts directory is in ~/.cache/nanochat
 export OMP_NUM_THREADS=1
@@ -51,6 +49,30 @@ wget -LO $NANOCHAT_BASE_DIR/tokenizer/token_bytes.pt https://huggingface.co/stef
 wget -LO $NANOCHAT_BASE_DIR/tokenizer/tokenizer.pkl https://huggingface.co/stefan-it/nanochat-german-tokenizer/resolve/main/tokenizer.pkl?download=true
 
 # -----------------------------------------------------------------------------
+# Download evaluation data
+export NANOCHAT_EVAL_DIR=$NANOCHAT_BASE_DIR/eval_bundle
+export NANOCHAT_EVAL_DATA_DIR=$NANOCHAT_BASE_DIR/eval_bundle/eval_data
+mkdir -p $NANOCHAT_EVAL_DIR
+mkdir -p $NANOCHAT_EVAL_DATA_DIR
+
+wget -LO $NANOCHAT_EVAL_DIR/core.yaml  https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data/resolve/main/core.yaml?download=true
+wget -LO $NANOCHAT_EVAL_DIR/eval_meta_data.csv  https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data/resolve/main/eval_meta_data.csv?download=true
+
+for folder in commonsense_reasoning language_understanding reading_comprehension safety world_knowledge; do
+  mkdir -p $NANOCHAT_EVAL_DATA_DIR/$folder
+done
+
+wget -LO $NANOCHAT_EVAL_DATA_DIR/commonsense_reasoning/copa.jsonl  https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data/resolve/main/commonsense_reasoning/copa.jsonl?download=true
+
+wget -LO $NANOCHAT_EVAL_DATA_DIR/language_understanding/hellaswag.jsonl  https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data/resolve/main/language_understanding/hellaswag.jsonl?download=true
+
+wget -LO $NANOCHAT_EVAL_DATA_DIR/reading_comprehension/boolq.jsonl  https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data/resolve/main/reading_comprehension/boolq.jsonl?download=true
+
+wget -LO $NANOCHAT_EVAL_DATA_DIR/safety/enterprise_pii_classification.jsonl  https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data/resolve/main/safety/enterprise_pii_classification.jsonl?download=true
+
+wget -LO $NANOCHAT_EVAL_DATA_DIR/world_knowledge/mmlu.jsonl  https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data/resolve/main/world_knowledge/mmlu.jsonl?download=true
+
+# -----------------------------------------------------------------------------
 # Download pretraining data
 python -m nanochat.dataset -n 240
 
@@ -58,3 +80,5 @@ python -m nanochat.dataset -n 240
 # Base model (pretraining)
 ## pretrain the d20 model
 torchrun --standalone --nproc_per_node=8 -m scripts.base_train -- --depth=20 --run=$WANDB_RUN
+torchrun --standalone --nproc_per_node=8 -m scripts.base_loss
+torchrun --standalone --nproc_per_node=8 -m scripts.base_eval
