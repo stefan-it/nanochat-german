@@ -6,7 +6,7 @@
 # 1) Example launch (simplest):
 # bash train_model.sh
 # 2) Example launch in a tmux session (because the run takes ~4 hours):
-# WANDB_RUN=speedrun tmux new-session -s speedrun -d "bash train_model.sh" \; pipe-pane -o "cat >> speedrun.log"
+# WANDB_RUN=nanochat-german tmux new-session -s nanochat-german -d "bash train_model.sh" \; pipe-pane -o "cat >> nanochat-german.log"
 
 # Default intermediate artifacts directory is in ~/.cache/nanochat
 export OMP_NUM_THREADS=1
@@ -31,11 +31,9 @@ uv pip install trackio
 source .venv/bin/activate
 
 # -----------------------------------------------------------------------------
-# wandb setup
-# If you wish to use wandb for logging (it's nice!, recommended).
-# 1) Make sure to first log in to wandb, e.g. run:
-#    `wandb login`
-# 2) Set the WANDB_RUN environment variable when running this script, e.g.:
+# trackio setup
+# If you wish to use trackio for logging (it's nice!, recommended).
+# Set the WANDB_RUN environment variable when running this script, e.g.:
 #    `WANDB_RUN=d26 bash speedrun.sh`
 if [ -z "$WANDB_RUN" ]; then
     # by default use "dummy" : it's handled as a special case, skips logging to wandb
