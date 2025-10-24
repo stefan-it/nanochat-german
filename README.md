@@ -52,7 +52,7 @@ The [base model](https://huggingface.co/stefan-it/nanochat-german-base) was trai
 As I am a fan of `tmux` instead of using `screen`. the following command was used:
 
 ```bash
-WANDB_RUN=speedrun tmux new-session -s speedrun -d "bash train_model.sh" \; pipe-pane -o "cat >> speedrun.log"
+WANDB_RUN=nanochat-german tmux new-session -s nanochat-german -d "bash train_model.sh" \; pipe-pane -o "cat >> nanochat-german.log"
 ```
 
 ## Acknowledgements
