@@ -21,12 +21,13 @@ import pyarrow.parquet as pq
 import pyarrow as pa
 
 # Source dataset
-dataset_kwargs = {
-    "path": "HuggingFaceFW/fineweb-edu",
-    "split": "train",
-    "name": "sample-100BT", # ~100B GPT-2 tokens at ~3 chars/token => ~300B chars total
-}
-ds = load_dataset(**dataset_kwargs)
+num_original_shards = 50
+
+files = [f"output_{i}.jsonl" for i in range(0, num_original_shards)]
+
+data_files = {"train": files}
+
+ds = load_dataset("LSX-UniWue/LLaMmlein-Dataset", data_files=data_files, split="train")
 
 # Shuffle to scramble the order
 ds = ds.shuffle(seed=42)
@@ -34,7 +35,7 @@ ndocs = len(ds) # total number of documents to process
 print(f"Total number of documents: {ndocs}")
 
 # Repackage into parquet files
-output_dir = "/home/ubuntu/.cache/nanochat/base_data"
+output_dir = "./base_data"
 os.makedirs(output_dir, exist_ok=True)
 
 # Write to parquet files
@@ -85,8 +86,9 @@ def upload():
     token = os.getenv("HF_TOKEN")
     api = HfApi(token=token)
     api.upload_large_folder(
-        folder_path=output_dir,
-        repo_id="karpathy/fineweb-edu-100b-shuffle",
+        folder_path="./base_data",
+        repo_id="stefan-it/nanochat-german-data-deprecated",
         repo_type="dataset",
+        private=True,
     )
-# upload()
+upload()

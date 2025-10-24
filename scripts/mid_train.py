@@ -119,7 +119,8 @@ def mid_data_generator(split):
     assert dataset_size > 0
     needed_tokens = device_batch_size * max_seq_len + 1 # to form one training batch of inputs,targets
     token_buffer = deque()
-    scratch = torch.empty(needed_tokens, dtype=torch.int64, pin_memory=True)
+    # CUDA supports memory pinning for faster transfers between CPU and GPU:
+    scratch = torch.empty(needed_tokens, dtype=torch.int64, pin_memory=(device_type == "cuda"))
     cursor = ddp_rank # increments by ddp_world_size each time, so each rank processes unique documents
     it = 0 # iteration counter
     while True:
