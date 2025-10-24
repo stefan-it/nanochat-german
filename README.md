@@ -12,6 +12,7 @@ Please note that *this* implementation is not meant to be the **one** German nan
 
 ## Changelog
 
+* 24.10.2025: [Public release](https://huggingface.co/stefan-it/nanochat-german-base) of the trained base model
 * 22.10.2025: [Various fixes](https://github.com/stefan-it/nanochat-german/pull/1) for the evaluation code
 * 21.10.2025: [Public release](https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data) of translated evaluation datasets
 * 20.10.2025: Initial version.
@@ -24,6 +25,7 @@ Here's a quick overview of (completed) steps for training a nanochat model for G
 * [x] Tokenizer Training
 * [x] Tokenizer Evaluation
 * [x] [Evaluation Datasets](https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data)
+* [x] [Base Model Training](https://huggingface.co/stefan-it/nanochat-german-base)
 
 Expect more updates in the upcoming days!
 
@@ -42,6 +44,16 @@ A tokenizer on 2B chars is trained using Andrej's implementation and is also ava
 ## Tokenizer Evaluation
 
 The original tokenizer evaluation scripts contain English examples. We did not simply "translate" these examples to German. Instead, we used proper German examples from newspaper articles, lecture notes, and theses.
+
+## Base Model Training
+
+The [base model](https://huggingface.co/stefan-it/nanochat-german-base) was trained using the [train_model.sh](train_model.sh) script on 8xA100 from [Lambda](https://lambda.ai/).
+
+As I am a fan of `tmux` instead of using `screen`. the following command was used:
+
+```bash
+WANDB_RUN=speedrun tmux new-session -s speedrun -d "bash train_model.sh" \; pipe-pane -o "cat >> speedrun.log"
+```
 
 ## Acknowledgements
 
