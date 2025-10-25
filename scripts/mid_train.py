@@ -24,10 +24,15 @@ from nanochat.checkpoint_manager import load_model
 import torch.distributed as dist
 
 from tasks.common import TaskMixture
-from tasks.gsm8k import GSM8K
-from tasks.mmlu import MMLU
-from tasks.smoltalk import SmolTalk
-from tasks.customjson import CustomJSON
+
+from tasks.german_alpaca import GermanAlpaca
+from tasks.german_dolly import GermanDolly
+from tasks.german_evol_instruct import GermanEvolInstruct
+from tasks.german_guanako import GermanGuanako
+from tasks.german_openhermes import GermanOpenhermes
+from tasks.german_share_gpt import GermanShareGpt
+from tasks.german_spelling import GermanSpelling, GermanSimpleSpelling
+
 
 # -----------------------------------------------------------------------------
 run = "dummy" # wandb run name default ("dummy" is special - we won't log to wandb)
@@ -95,17 +100,20 @@ for opt in optimizers:
 base_dir = get_base_dir()
 identity_conversations_filepath = os.path.join(base_dir, "identity_conversations.jsonl")
 train_dataset = TaskMixture([
-    SmolTalk(split="train"), # 460K rows of general conversations
-    MMLU(subset="auxiliary_train", split="train"), # 100K rows of multiple choice problems drawn from ARC, MC_TEST, OBQA, RACE
-    GSM8K(subset="main", split="train"), # 8K rows teaching simple math and (calculator) tool use
-    CustomJSON(filepath=identity_conversations_filepath), # 1000 rows of synthetic identity conversations
-    CustomJSON(filepath=identity_conversations_filepath), # let's do 2 epochs of these
-]) # total: 460K + 100K + 8K = 568K rows
+    GermanAlpaca(split="train"),
+    GermanDolly(split="train"),
+    GermanEvolInstruct(split="train"),
+    GermanGuanako(split="train"),
+    GermanOpenhermes(split="train"),
+    GermanShareGpt(split="train"),
+    GermanSpelling(size=200_000, split="train"),
+    GermanSimpleSpelling(size=80_000, split="train")
+]) # total: 50_469 + 15_015 + 59_022 + 9_829 + 238_658 + 6_101 + 200_000 + 80_000 = 659_094
+
 val_dataset = TaskMixture([
-    SmolTalk(split="test"), # 24K rows in test set
-    MMLU(subset="all", split="test", stop=5200), # 14K rows in test set, use only 5.2K to match the train ratios
-    GSM8K(subset="main", split="test", stop=420), # 1.32K rows in test set, use only 420 to match the train ratios
-]) # total: 24K + 14K + 1.32K ~= 39K rows
+    GermanGuanako(split="test"),
+]) # total: 516 + 20_000 + 8_000 = 28_516
+
 # DataLoader is defined here, it emits inputs, targets : 2D tensors of shape (device_batch_size, max_seq_len)
 # A big problem is that we don't know the final num_iterations in advance. So we create
 # these two global variables and update them from within the data generator.
