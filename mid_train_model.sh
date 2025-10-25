@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # This script is the "Best ChatGPT clone that $100 can buy",
-# It is designed to run in ~4 hours on 8XH100 node at $3/GPU/hour.
+# It is designed to run midtraining in under one hour on a 8XH100 or 8XA100 node.
 
-# WANDB_RUN=nanochat-german tmux new-session -s nanochat-german -d "bash train_model.sh" \; pipe-pane -o "cat >> nanochat-german.log"
+# WANDB_RUN=nanochat-german tmux new-session -s nanochat-german -d "bash mid_train_model.sh" \; pipe-pane -o "cat >> nanochat-german.log"
 
 # Default intermediate artifacts directory is in ~/.cache/nanochat
 export OMP_NUM_THREADS=1
