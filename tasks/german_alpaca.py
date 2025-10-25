@@ -6,7 +6,7 @@ https://huggingface.co/datasets/stefan-it/nanochat-german-alpaca
 from datasets import load_dataset
 from tasks.common import Task
 
-class GermanGuanako(Task):
+class GermanAlpaca(Task):
     """ German Alpaca dataset. train has 50,469 rows. """
 
     def __init__(self, split, **kwargs):
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     }
 
     for split_name, split_length in split_lengths.items():
-        german_alpaca = GermanGuanako(split_name)
+        german_alpaca = GermanAlpaca(split_name)
         assert split_length == german_alpaca.length
 
         for i in range(0, split_length):
