@@ -56,8 +56,8 @@ uv run maturin develop --release --manifest-path rustbpe/Cargo.toml
 export NANOCHAT_TOKENIZER_DIR=$NANOCHAT_BASE_DIR/tokenizer
 mkdir -p $NANOCHAT_TOKENIZER_DIR
 
-wget -LO $NANOCHAT_TOKENIZER_DIR/core.yaml  https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data/resolve/main/core.yaml?download=true
-wget -LO $NANOCHAT_TOKENIZER_DIR/eval_meta_data.csv  https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data/resolve/main/eval_meta_data.csv?download=true
+wget -LO $NANOCHAT_TOKENIZER_DIR/token_bytes.pt  https://huggingface.co/stefan-it/nanochat-german-tokenizer/resolve/main/token_bytes.pt?download=true
+wget -LO $NANOCHAT_TOKENIZER_DIR/tokenizer.pkl  https://huggingface.co/stefan-it/nanochat-german-tokenizer/resolve/main/tokenizer.pkl?download=true
 
 # -----------------------------------------------------------------------------
 # Download evaluation data
