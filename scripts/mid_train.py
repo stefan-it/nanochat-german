@@ -13,7 +13,7 @@ from collections import deque
 import os
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 import time
-import wandb
+import trackio as wandb
 import torch
 from contextlib import nullcontext
 from nanochat.common import compute_init, compute_cleanup, print0, DummyWandb, get_base_dir, autodetect_device_type
