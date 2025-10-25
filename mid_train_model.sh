@@ -85,7 +85,7 @@ wget -LO $NANOCHAT_EVAL_DATA_DIR/world_knowledge/mmlu.jsonl  https://huggingface
 
 # -----------------------------------------------------------------------------
 # Download checkpoint
-export NANOCHAT_CHECKPOINT_DIR=$NANOCHAT_BASE_DIR/base_checkpoints
+export NANOCHAT_CHECKPOINT_DIR=$NANOCHAT_BASE_DIR/base_checkpoints/d20
 mkdir -p $NANOCHAT_CHECKPOINT_DIR
 
 wget -LO $NANOCHAT_CHECKPOINT_DIR/meta_021400.json  https://huggingface.co/stefan-it/nanochat-german-base-checkpoint/resolve/main/meta_021400.json?download=true
