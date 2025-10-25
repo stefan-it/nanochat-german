@@ -1,11 +1,11 @@
 """
 Evaluate the Chat model.
-All the generic code lives here, and all the evlauation-specific
+All the generic code lives here, and all the evaluation-specific
 code lives in nanochat directory and is imported from here.
 
 Example runs:
-python -m scripts.chat_eval -a ARC-Easy
-torchrun --nproc_per_node=8 -m scripts.chat_eval -- -a ARC-Easy
+python -m scripts.chat_eval -a GermanSpelling
+torchrun --nproc_per_node=8 -m scripts.chat_eval -- -a GermanSpelling
 """
 
 import argparse
@@ -19,10 +19,8 @@ from nanochat.common import compute_init, compute_cleanup, get_dist_info, print0
 from nanochat.checkpoint_manager import load_model
 from nanochat.engine import Engine
 
-from tasks.humaneval import HumanEval
-from tasks.mmlu import MMLU
-from tasks.arc import ARC
-from tasks.gsm8k import GSM8K
+from tasks.german_guanako import GermanGuanako
+from tasks.german_spelling import GermanSpelling, GermanSimpleSpelling
 
 # -----------------------------------------------------------------------------
 # Generative evaluation loop (we go one problem at a time, sample, evaluate)
@@ -160,11 +158,9 @@ def run_chat_eval(task_name, model, tokenizer, engine,
                    max_problems=None):
     # Create the evaluation object
     task_module = {
-        'HumanEval': HumanEval,
-        'MMLU': partial(MMLU, subset="all", split="test"),
-        'ARC-Easy': partial(ARC, subset="ARC-Easy", split="test"),
-        'ARC-Challenge': partial(ARC, subset="ARC-Challenge", split="test"),
-        'GSM8K': partial(GSM8K, subset="main", split="test"),
+        'GermanGuanako': partial(GermanGuanako, split="test"),
+        'GermanSpelling': partial(GermanSpelling, size=256, split="test"),
+        'GermanSimpleSpelling': partial(GermanSimpleSpelling, size=256, split="test"),
     }[task_name]
     task_object = task_module()
     # Run the evaluation
@@ -204,13 +200,11 @@ if __name__ == "__main__":
     engine = Engine(model, tokenizer)
 
     # Get the tasks to evaluate on
-    all_tasks = ['ARC-Easy', 'ARC-Challenge', 'MMLU', 'GSM8K', 'HumanEval']
+    all_tasks = ['GermanSpelling', 'GermanSimpleSpelling']
     baseline_accuracies = {
-        'ARC-Easy': 0.25, # multiple choice 1 of 4 => 25%
-        'ARC-Challenge': 0.25, # multiple choice 1 of 4 => 25%
-        'MMLU': 0.25, # multiple choice 1 of 4 => 25%
-        'GSM8K': 0.0, # open-ended => 0%
-        'HumanEval': 0.0, # open-ended => 0%
+        'GermanGuanako': 0.0, # open-ended => 0%
+        'GermanSpelling': 0.0, # open-ended => 0%
+        'GermanSimpleSpelling': 0.0, # open-ended => 0%
     }
     task_names = all_tasks if args.task_name is None else args.task_name.split('|')
 
