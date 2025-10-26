@@ -21,10 +21,10 @@ class GermanEuroblocks(Task):
 
     def _expand_message(self, message):
         # expand message keys:
-            # - "from" to "role"
-            #   - "human" in "role" to "user"
-            #   - "gpt" in "role" to "assistant"
-            #   - "system" in "role" to "assistant"
+        # - "from" to "role"
+        #   - "human" in "role" to "user"
+        #   - "gpt" in "role" to "assistant"
+        #   - "system" in "role" to "assistant"
         message["content"] = message["value"]
 
         current_role = message["from"]
