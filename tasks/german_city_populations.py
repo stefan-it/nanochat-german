@@ -9,9 +9,7 @@ from tasks.common import Task
 
 
 USER_MSG_TEMPLATES = [
-    "Wieviele Einwohner hat {city}",
-    "Wieviele Menschen leben in {city}",
-    "Wie hoch ist die Bevölkerungszahl von {city}",
+    "Wieviele Einwohner hat {city}?",
 ]
 
 class GermanCityPopulations(Task):
@@ -36,9 +34,6 @@ class GermanCityPopulations(Task):
         template = rng.choice(USER_MSG_TEMPLATES)
 
         user_msg = template.format(city=city)
-
-        if rng.random() < 0.5: # 50% of people don't even use question marks
-            user_msg += "?"
 
         output_msg = f"In {city} wohnen {population} Menschen."
 
