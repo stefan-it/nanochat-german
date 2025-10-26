@@ -84,7 +84,7 @@ class GermanEuroblocks(Task):
             assert message["role"] == expected_role, f"Message {i} has role {message['role']} but should be {expected_role}"
             assert isinstance(message["content"], str), "Content must be a string"
 
-            # remove the thinking passage, because it is in English unfortunately
+            # remove potential thinking passages...
             if message["role"] == "assistant":
                 content = re.sub(r'<think>.*?</think>\n*', '', message["content"], flags=re.DOTALL)
                 message["content"] = content
