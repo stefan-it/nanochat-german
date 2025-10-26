@@ -12,6 +12,7 @@ Please note that *this* implementation is not meant to be the **one** German nan
 
 ## Changelog
 
+* 26.10.2025: [Public relase](https://huggingface.co/stefan-it/nanochat-german-v1) of the first chat-ready model
 * 24.10.2025: [Public release](https://huggingface.co/stefan-it/nanochat-german-base) of the trained base model
 * 22.10.2025: [Various fixes](https://github.com/stefan-it/nanochat-german/pull/1) for the evaluation code
 * 21.10.2025: [Public release](https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data) of translated evaluation datasets
@@ -26,6 +27,7 @@ Here's a quick overview of (completed) steps for training a nanochat model for G
 * [x] Tokenizer Evaluation
 * [x] [Evaluation Datasets](https://huggingface.co/datasets/stefan-it/nanochat-german-eval-data)
 * [x] [Base Model Training](https://huggingface.co/stefan-it/nanochat-german-base)
+* [x] [Mid-Training](https://huggingface.co/stefan-it/nanochat-german-v1)
 
 Expect more updates in the upcoming days!
 
@@ -54,6 +56,10 @@ As I am a fan of `tmux` instead of using `screen`. the following command was use
 ```bash
 WANDB_RUN=nanochat-german tmux new-session -s nanochat-german -d "bash train_model.sh" \; pipe-pane -o "cat >> nanochat-german.log"
 ```
+
+## Mid-Training
+
+In the mid-training phase, the base model is fine-tuned on various German SFT datasets, including a spelling task. The mid-training can be started using the [mid_train_model.sh](mid_train_model.sh) script. On 8xA100 from [Lambda](https://lambda.ai/) it took around 7 minutes.
 
 ## Acknowledgements
 
