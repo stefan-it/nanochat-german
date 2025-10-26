@@ -133,7 +133,7 @@ Dann zähle die Vorkommen des Buchstabens '{letter}':
             else:
                 manual_text += f"{i}:{char}\n"
 
-        manual_text += f"\nThis gives us {running_count}."
+        manual_text += f"\nDas ergibt {running_count}."
         assistant_parts.append({"type": "text", "text": manual_text})
         # Part 2: Python verification
         assistant_parts.append({"type": "text", "text": "\n\nLass mich das zusätzlich noch in Python überprüfen:\n\n"})
@@ -141,7 +141,7 @@ Dann zähle die Vorkommen des Buchstabens '{letter}':
         python_expr = f"'{word}'.count('{letter}')"
         assistant_parts.append({"type": "python", "text": python_expr})
         # Part 4: Python output
-        assistant_parts.append({"type": "python_output", "text": str(count)})
+        assistant_parts.append({"type": "python_output", "text": f"\n\n>>> {str(count)}"})
         # Part 5: Final answer
         assistant_parts.append({"type": "text", "text": f"\n\nPython kommt auf {count}.\n\nMeine finale Antwort ist:\n\n#### {count}"})
 
