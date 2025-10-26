@@ -19,7 +19,6 @@ from nanochat.common import compute_init, compute_cleanup, get_dist_info, print0
 from nanochat.checkpoint_manager import load_model
 from nanochat.engine import Engine
 
-from tasks.german_guanako import GermanGuanako
 from tasks.german_spelling import GermanSpelling, GermanSimpleSpelling
 
 # -----------------------------------------------------------------------------
@@ -158,9 +157,7 @@ def run_chat_eval(task_name, model, tokenizer, engine,
                    max_problems=None):
     # Create the evaluation object
     task_module = {
-        'GermanGuanako': partial(GermanGuanako, split="test"),
         'GermanSpelling': partial(GermanSpelling, size=256, split="test"),
-        'GermanSimpleSpelling': partial(GermanSimpleSpelling, size=256, split="test"),
     }[task_name]
     task_object = task_module()
     # Run the evaluation
@@ -200,11 +197,9 @@ if __name__ == "__main__":
     engine = Engine(model, tokenizer)
 
     # Get the tasks to evaluate on
-    all_tasks = ['GermanSpelling', 'GermanSimpleSpelling']
+    all_tasks = ['GermanSpelling']
     baseline_accuracies = {
-        'GermanGuanako': 0.0, # open-ended => 0%
         'GermanSpelling': 0.0, # open-ended => 0%
-        'GermanSimpleSpelling': 0.0, # open-ended => 0%
     }
     task_names = all_tasks if args.task_name is None else args.task_name.split('|')
 
