@@ -26,12 +26,17 @@ import torch.distributed as dist
 from tasks.common import TaskMixture
 
 from tasks.german_alpaca import GermanAlpaca
+from tasks.german_city_populations import GermanCityPopulations
+from tasks.german_city_state import GermanCityState
 from tasks.german_dolly import GermanDolly
+from tasks.german_euroblocks import GermanEuroblocks
 from tasks.german_evol_instruct import GermanEvolInstruct
 from tasks.german_guanako import GermanGuanako
 from tasks.german_openhermes import GermanOpenhermes
 from tasks.german_share_gpt import GermanShareGpt
+from tasks.german_smoltalk import GermanSmoltalk
 from tasks.german_spelling import GermanSpelling, GermanSimpleSpelling
+from tasks.wmt import Wmt19
 
 
 # -----------------------------------------------------------------------------
@@ -101,14 +106,20 @@ base_dir = get_base_dir()
 identity_conversations_filepath = os.path.join(base_dir, "identity_conversations.jsonl")
 train_dataset = TaskMixture([
     GermanAlpaca(split="train"),
+    GermanCityPopulations(split="train"),
+    GermanCityState(split="train"),
     GermanDolly(split="de"),
+    GermanEuroblocks(split="train"),
     GermanEvolInstruct(split="train"),
     GermanGuanako(split="train"),
     GermanOpenhermes(split="train"),
     GermanShareGpt(split="train"),
+    GermanSmoltalk(split="train"),
     GermanSpelling(size=200_000, split="train"),
-    GermanSimpleSpelling(size=80_000, split="train")
-]) # total: 50_469 + 15_015 + 59_022 + 9_829 + 238_658 + 6_101 + 200_000 + 80_000 = 659_094
+    GermanSimpleSpelling(size=80_000, split="train"),
+    Wmt19(split="train", direction="en-de", size=200_000),
+    Wmt19(split="train", direction="de-en", size=200_000),
+]) # total: 50_469 + 706 + 706 + 15_015 + 13_976 + 59_022 + 9_829 + 238_658 + 6_101 + 51_095 + 200_000 + 80_000 + 200_000 + 200_000 = 1_125_577
 
 val_dataset = TaskMixture([
     GermanGuanako(split="test"),
