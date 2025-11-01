@@ -115,15 +115,15 @@ train_dataset = TaskMixture([
     GermanOpenhermes(split="train"),
     GermanShareGpt(split="train"),
     GermanSmoltalk(split="train"),
-    GermanSpelling(size=200_000, split="train"),
-    GermanSimpleSpelling(size=80_000, split="train"),
-    Wmt19(split="train", direction="en-de", size=400_000),
-    Wmt19(split="train", direction="de-en", size=400_000),
-]) # total: 50_469 + 706 + 706 + 15_015 + 13_976 + 59_022 + 9_829 + 238_658 + 6_099 + 51_095 + 200_000 + 80_000 + 400_000 + 400_000 = 1_525_577
+    GermanSpelling(size=1_000_000, split="train"),
+    GermanSimpleSpelling(size=1_000_000, split="train"),
+    Wmt19(split="train", direction="en-de", size=1_000_000),
+    Wmt19(split="train", direction="de-en", size=1_000_000),
+]) # total: 50_469 + 706 + 706 + 15_015 + 13_976 + 59_022 + 9_829 + 238_658 + 6_099 + 51_095 + 1_000_000 + 1_000_000 + 1_000_000 + 1_000_000 = 4_445_575
 
 val_dataset = TaskMixture([
     GermanGuanako(split="test"),
-]) # total: 516 + 20_000 + 8_000 = 28_516
+]) # total: 516
 
 # DataLoader is defined here, it emits inputs, targets : 2D tensors of shape (device_batch_size, max_seq_len)
 # A big problem is that we don't know the final num_iterations in advance. So we create
