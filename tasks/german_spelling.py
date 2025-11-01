@@ -62,6 +62,7 @@ class GermanSpelling(Task):
         super().__init__(**kwargs)
         assert split in ["train", "test"], "SpellingBee split must be train|test"
         self.size = size
+        self.length = size
         self.split = split
 
         # Manually created wordlist for German
@@ -187,6 +188,7 @@ class GermanSimpleSpelling(Task):
         super().__init__(**kwargs)
         assert split in ["train", "test"], "SpellingBee split must be train|test"
         self.size = size
+        self.length = size
         self.split = split
 
         # Manually created wordlist for German
@@ -234,13 +236,17 @@ class GermanSimpleSpelling(Task):
 if __name__ == "__main__":
     german_spelling_bee = GermanSpelling()
 
-    for i in range(0, 10):
-        print(german_spelling_bee.get_example(i))
-        print("-" * 120)
+    for i in range(0, german_spelling_bee.size):
+        if i == 0:
+            print(f"First example:")
+            print(german_spelling_bee.get_example(i))
+        german_spelling_bee.get_example(i)
     print("\n")
 
     german_simple_spelling = GermanSimpleSpelling()
 
-    for i in range(0, 10):
-        print(german_simple_spelling.get_example(i))
-        print("-" * 120)
+    for i in range(0, german_simple_spelling.size):
+        if i == 0:
+            print(f"First example:")
+            print(german_simple_spelling.get_example(i))
+        german_simple_spelling.get_example(i)
