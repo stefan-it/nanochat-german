@@ -119,7 +119,7 @@ train_dataset = TaskMixture([
     GermanSimpleSpelling(size=80_000, split="train"),
     Wmt19(split="train", direction="en-de", size=400_000),
     Wmt19(split="train", direction="de-en", size=400_000),
-]) # total: 50_469 + 706 + 706 + 15_015 + 13_976 + 59_022 + 9_829 + 238_658 + 6_101 + 51_095 + 200_000 + 80_000 + 400_000 + 400_000 = 1_525_577
+]) # total: 50_469 + 706 + 706 + 15_015 + 13_976 + 59_022 + 9_829 + 238_658 + 6_099 + 51_095 + 200_000 + 80_000 + 400_000 + 400_000 = 1_525_577
 
 val_dataset = TaskMixture([
     GermanGuanako(split="test"),
